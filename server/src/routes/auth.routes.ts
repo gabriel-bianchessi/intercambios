@@ -52,6 +52,8 @@ router.post('/signIn', async (req: Request, res: Response) => {
       name: true,
       email: true,
       birthDate: true,
+      description: true,
+      type: true,
     },
   })
 

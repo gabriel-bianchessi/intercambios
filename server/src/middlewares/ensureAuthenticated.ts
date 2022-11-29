@@ -19,7 +19,7 @@ async function ensureAuthenticated (req: Request, res: Response, next: NextFunct
     const decoded: JwtPayload | string = verify(token, publicKey, {
       algorithms: ["RS256"],
     })
-    const userId = (decoded as JwtDecoded).id
+    let userId = (decoded as JwtDecoded).id
     const user = await prisma.user.findUnique({
       where: {
         id: userId,

@@ -8,18 +8,18 @@ datasource db {
 }
 
 model address {
-  id            Int     @id @default(autoincrement())
-  street        String
-  number        String
-  complement    String?
-  neighbourhood String
-  city          String
-  state         String
-  country       String
-  postalCode    String
-  coordinates   String
-  userId        Int
-  user          user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id           Int     @id @default(autoincrement())
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  country      String
+  postalCode   String
+  coordinates  String
+  userId       Int
+  user         user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model post {

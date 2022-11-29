@@ -1,5 +1,5 @@
 export interface JwtDecoded {
-  id: string
+  id: number
   iat: number
   exp: number
 }

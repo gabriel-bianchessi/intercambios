@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express"
 import fs from "fs"
 import { JwtPayload, verify } from "jsonwebtoken"
 import { JwtDecoded } from "../../@types/jwtDecoded"
-import { Post, PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
 import path from "path"
 
 const prisma = new PrismaClient()
@@ -25,21 +25,23 @@ router.post("/create", async (req: Request, res: Response) => {
     data: {
       title,
       content,
-      author: {
-        connect: { id: user?.id },
-      },
+      user: {
+        connect: {
+          id: user.id,
+        }
+      }
     },
     select: {
       id: true,
       title: true,
       content: true,
       createdAt: true,
-      author: {
+      user: {
         select: {
           id: true,
           name: true,
-        },
-      },
+        }
+      }
     },
   })
 
@@ -73,30 +75,12 @@ router.get("/all", async (req: Request, res: Response) => {
         content: true,
         createdAt: true,
         updatedAt: true,
-        author: {
+        user: {
           select: {
             id: true,
             name: true,
           },
         },
-        reactions: {
-          select: {
-            id: true,
-            type: true,
-          },
-          where: {
-            visible: true
-          }
-        },
-        _count: {
-          select: {
-            comments: true,
-            reactions: true
-          }
-        }
-        },
-        where: {
-          visible: true
         },
         orderBy: {
           createdAt: "asc"
@@ -127,12 +111,11 @@ router.get("/:postId", async (req: Request, res: Response) => {
     if (!userExists) {
       return res.status(401).json({ message: "Invalid token" })
     }
-    const postId = req.params.postId
+    const postId = parseInt(req.params.postId)
 
     const post = await prisma.post.findFirst({
       where: {
         id: postId,
-        visible: true,
       },
       select: {
         id: true,
@@ -140,51 +123,12 @@ router.get("/:postId", async (req: Request, res: Response) => {
         content: true,
         createdAt: true,
         updatedAt: true,
-        author: {
+        user: {
           select: {
             id: true,
             name: true,
           },
         },
-        comments: {
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            replyTo: true,
-            author: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            reactions: {
-              select: {
-                id: true,
-                type: true,
-              },
-            }
-          },
-          where: {
-            visible: true,
-          }
-        },
-        reactions: {
-          select: {
-            id: true,
-            type: true,
-          },
-          where: {
-            visible: true
-          }
-        },
-        _count: {
-          select: {
-            comments: true,
-            reactions: true
-          }
-        }
       },
     })
 
@@ -198,12 +142,12 @@ router.get("/:postId", async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   const user = req.currentUser
   const {title, content} = req.body
-  const postId = req.params.id
+  const postId = parseInt(req.params.id)
 
   const postBelongsUser = await prisma.post.findFirst({
     where: {
       id: postId,
-      authorId: user?.id
+      userId: user?.id
     }
   })
 
@@ -227,12 +171,11 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 router.delete('/:id', async (req: Request, res: Response) => {
   const user = req.currentUser
-  const postId = req.params.id
+  const postId = parseInt(req.params.id)
 
   const postBelongsUser = await prisma.post.findFirst({
     where: {
       id: postId,
-      authorId: user?.id
     }
   })
 
@@ -240,12 +183,9 @@ router.delete('/:id', async (req: Request, res: Response) => {
     return res.status(401).json({message: 'Esse post não pertence ao usuário'})
   }
 
-  const deletedPost = await prisma.post.update({
+  const deletedPost = await prisma.post.delete({
     where: {
       id: postId
-    },
-    data: {
-      visible: false
     }
   })
   
