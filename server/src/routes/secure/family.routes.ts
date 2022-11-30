@@ -33,6 +33,9 @@ router.get('/', async (req: Request, res: Response ) => {
     },
     where: {
       state: state,
+      user: {
+        type: 'FAMILY',
+      }
     }
   })
 

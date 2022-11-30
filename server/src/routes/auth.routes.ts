@@ -20,6 +20,7 @@ const prisma = new PrismaClient()
 const router = Router()
 
 router.post('/signIn', async (req: Request, res: Response) => {
+  console.log("requisicao")
   const { 
     name,
     email, 
@@ -57,7 +58,10 @@ router.post('/signIn', async (req: Request, res: Response) => {
     },
   })
 
-  return res.status(200).json(createdUser)
+  const access_token = createToken({ id: createdUser.id })
+  const refresh_token = createRefreshToken({ id: createdUser.id })
+  await storeToken(refresh_token, access_token)
+  return res.status(200).json({createdUser, access_token, refresh_token})
 })
 
 router.post('/login', async (req: Request, res: Response) => {
@@ -81,7 +85,7 @@ router.post('/login', async (req: Request, res: Response) => {
   })
 
   if (!user) {
-    return res.status(404).json({
+    return res.status(401).json({
       message: 'User or password incorrect',
     })
   }
@@ -89,7 +93,7 @@ router.post('/login', async (req: Request, res: Response) => {
   const isPasswordCorrect = await bcrypt.compare(password, user.password)
 
   if (!isPasswordCorrect) {
-    return res.status(404).json({
+    return res.status(401).json({
       message: 'User or password incorrect',
     })
   }

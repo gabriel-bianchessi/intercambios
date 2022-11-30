@@ -6,7 +6,7 @@ import familyRoutes from './family.routes'
 
 const router = Router()
 
-router.use("/", ensureAuthenticated)
+// router.use("/", ensureAuthenticated)
 router.use('/posts', postRoutes)
 router.use('/address', addressRoutes)
 router.use('/family', familyRoutes)
