@@ -6,6 +6,7 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import RegisterAddress from "./pages/RegisterAddress"
 import SearchFamilies from "./pages/SearchFamilies"
+import './App.css'
 
 function App() {
   return (
