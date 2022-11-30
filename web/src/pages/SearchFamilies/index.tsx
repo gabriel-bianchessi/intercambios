@@ -27,13 +27,6 @@ export default function SearchFamilies() {
   })
 
   return (  
-    <div>
-      <div className="sidebarStyle">
-        <div>
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-      </div>
-      <div ref={mapContainer} style={mapStyles} />
-    </div>
+    <></>
   )
 }
